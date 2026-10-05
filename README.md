@@ -1,1 +1,1 @@
-# lab-jan-domanski
+# lab-eksploracja-danych
