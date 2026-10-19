@@ -1,1 +1,2 @@
-# lab-eksploracja-danych
+# \# Lab Eksploracja Danych - wersja B
+
