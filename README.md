@@ -1,2 +1,1 @@
-# \# Lab Eksploracja Danych - wersja A
-
+# Lab Eksploracja Danych
