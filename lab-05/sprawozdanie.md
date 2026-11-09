@@ -21,17 +21,25 @@ Wnioski z EDA:
 
 
 Wykresy:
+
 Histogram - alcohol
+
 ![Histogram alcohol](histogram_alcohol.png)
+
 Boxplot - total sulfur dioxide
+
 ![Boxplot total sulfur dioxide](boxplot_total_sulfur_dioxide.png)
+
 Macierz korelacji
+
 ![Heatmapa](heatmapa.png)
 
 
 Zadanie 1:
 Wybrałem residual sugar (cukier resztkowy). Rozkład jest mocno prawostronnie skośny, większość win ma 1,5-3 g/l cukru, a średnia (2,54) jest wyższa od mediany (2,2) przez kilka bardzo słodkich win (maksimum 15,5). Na boxplocie jest około 155 wartości odstających, wszystkie po prawej stronie.
+
 ![Histogram residual sugar](zad1_histogram_residual_sugar.png)
+
 ![Boxplot residual sugar](zad1_boxplot_residual_sugar.png)
 
 
@@ -41,4 +49,5 @@ Procent braków policzyłem przez (df.isnull().mean()*100).round(1) i we wszystk
 
 Zadanie 3:
 Najsilniejsza korelacja na heatmapie to fixed acidity i pH, -0,68. Zależność jest ujemna i dość silna, im więcej kwasów, tym niższe pH, co dobrze widać na wykresie rozrzutu. Wysoka korelacja nie oznacza jednak, że jedna zmienna powoduje drugą, bo pokazuje tylko, że zmienne zmieniają się razem. Przyczyną może być trzecia zmienna albo przypadek. Tutaj akurat z chemii wiadomo, że kwasy obniżają pH, ale tego nie da się stwierdzić z samej korelacji.
+
 ![Wykres rozrzutu fixed acidity i pH](zad3_scatter_fixed_acidity_pH.png)
