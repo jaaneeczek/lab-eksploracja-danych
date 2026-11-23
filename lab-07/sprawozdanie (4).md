@@ -4,14 +4,11 @@ Jan Domański
 
 Zbiór danych
 
-Nazwa: Red Wine Quality (ten sam co na Lab 5 i 6)
+Nazwa: Red Wine Quality
 
 Źródło: https://www.kaggle.com/datasets/uciml/red-wine-quality-cortez-et-al-2009
 
-Notatnik lab07_mlops.ipynb to kopia notatnika z Lab 6, do której dopisałem kroki z tego laboratorium. Zmienna docelowa to dobre (1 = ocena wina 6 lub wyższa), dane są przygotowane tak jak na Lab 6. Plik z danymi nie jest wgrany do repozytorium. Użyłem MLflow 3.18 i Evidently 0.7.23.
-
-
-Runy w MLflow (eksperyment lab07-eksperyment)
+Runy w MLflow
 
 | Run | Model | Hiperparametry | Accuracy |
 |---|---|---|---|
@@ -19,7 +16,7 @@ Runy w MLflow (eksperyment lab07-eksperyment)
 | drzewo-6 | DecisionTreeClassifier | max_depth=6, random_state=42 | 0,7188 |
 | regresja | LogisticRegression | max_iter=1000 | 0,7406 |
 
-Najlepszy jest run regresja, bo ma najwyższe accuracy na tym samym zbiorze testowym (0,7406). Drzewa wypadły gorzej, a głębsze drzewo (max_depth=6) jest tylko trochę lepsze od płytszego, czyli większa głębokość nie daje tu dużo. Regresja logistyczna ma też tę zaletę, że dane są przeskalowane, czego ona potrzebuje.
+Najlepszy jest run regresja, bo ma najwyższe accuracy na tym samym zbiorze testowym. Drzewa wypadły gorzej, a głębsze drzewo jest tylko trochę lepsze od płytszego, czyli większa głębokość nie daje tu dużo. Regresja logistyczna ma też tę zaletę, że dane są przeskalowane, czego ona potrzebuje.
 
 ![Tabela runów](screenshots/krok3_tabela_runow.png)
 
@@ -32,12 +29,12 @@ Wersja: 1
 
 run_id: a7c2a8d5d10243ff8ade5ccf2eb7a7c6
 
-Model zarejestrowałem przez mlflow.register_model z adresem runs:/<run_id>/model. Potem wczytałem go z rejestru (models:/NajlepszyModelLab07/1) i policzyłem accuracy na X_test, wyszło to samo 0,7406, więc zapis i wczytanie działają.
+Model zarejestrowałem przez mlflow.register_model z adresem runs:/<run_id>/model. Wczytałem go z rejestru i policzyłem accuracy na X_test, wyszło 0,7406, więc zapis i wczytanie działają.
 
 
 Raport driftu
 
-Dane podzieliłem na pół: reference to pierwsze 799 wierszy, current to pozostałe 800. Raport Evidently (drift_report.html) wykrył drift w 11 z 12 kolumn (91,7%), więc wykryto drift całego zbioru, bo próg to połowa kolumn. Dla kolumn liczbowych użyto testu K-S, a dla kolumny dobre (0/1) testu Z. Drift mają wszystkie kolumny poza sulphates (p-value 0,056). Drift w kolumnie dobre oznacza, że w drugiej połowie pliku jest inny udział dobrych win. Wychodzi na to, że wiersze w pliku nie są wymieszane losowo i druga połowa to trochę inne wina.
+Dane podzieliłem na pół: reference to pierwsze 799 wierszy, current to pozostałe 800. Raport  wykrył drift w 11 z 12 kolumn (91,7%), więc wykryto drift całego zbioru, bo próg to połowa kolumn. Dla kolumn liczbowych użyto testu K-S, a dla kolumny dobre (0/1) testu Z. Drift mają wszystkie kolumny poza sulphates (p-value 0,056). Drift w kolumnie dobre oznacza, że w drugiej połowie pliku jest inny udział dobrych win. Wychodzi na to, że wiersze w pliku nie są wymieszane losowo i druga połowa to trochę inne wina.
 
 ![Raport driftu](screenshots/krok4_raport.png)
 
@@ -51,7 +48,7 @@ Retrening
 | Stary model (przed retreningiem) | reference | 0,7425 |
 | Nowy model (po retreningu) | reference + cur_train | 0,7600 |
 
-Oba modele to LogisticRegression(max_iter=1000) i oba oceniałem na tym samym zbiorze cur_test (połowa danych aktualnych). Retrening poprawił wynik o około 1,8 pkt proc., bo nowy model widział już część danych z drugiej połowy, w której był drift.
+Oba modele to LogisticRegression(max_iter=1000) i oba oceniałem na tym samym zbiorze cur_test. Retrening poprawił wynik o około 1,8 pkt proc., bo nowy model widział już część danych z drugiej połowy, w której był drift.
 
 ![Retrening](screenshots/krok5_retrening.png)
 
@@ -68,12 +65,12 @@ Harmonogram monitorowania
 
 Zadanie 1 - symulacja driftu
 
-Do kolumny alcohol w danych aktualnych dodałem 1 (kolumna jest przeskalowana, więc to przesunięcie o jedno odchylenie standardowe). alcohol miała drift już wcześniej, ale po zmianie p-value w teście K-S spadło z około 1e-34 do około 2e-173, czyli drift jest dużo silniejszy. Drift wykrył test K-S. Accuracy starego modelu z Kroku 5 spadło z 0,7525 na current do 0,6913 na current_drift, czyli o około 6 pkt proc., bo model dostał wartości alkoholu, jakich nie widział przy treningu.
+Do kolumny alcohol w danych aktualnych dodałem 1 (kolumna jest przeskalowana, więc to przesunięcie o jedno odchylenie standardowe). Alcohol miała drift już wcześniej, ale po zmianie p-value w teście K-S spadło z około 1e-34 do około 2e-173, czyli drift jest dużo silniejszy. Drift wykrył test K-S. Accuracy starego modelu z Kroku 5 spadło z 0,7525 na current do 0,6913 na current_drift, czyli o około 6 pkt proc., bo model dostał wartości alkoholu, jakich nie widział przy treningu.
 
 ![Zadanie 1](screenshots/zadanie1_raport_alcohol.png)
 
 
-Zadanie 2 - druga metryka (F1)
+Zadanie 2 - druga metryka
 
 | Run | Accuracy | F1 (weighted) |
 |---|---|---|
